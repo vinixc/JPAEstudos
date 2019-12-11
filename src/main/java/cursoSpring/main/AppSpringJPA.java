@@ -1,13 +1,17 @@
 package cursoSpring.main;
 
+import java.util.Arrays;
 import java.util.List;
 
+import cursoSpring.dao.AddressDAO;
 import cursoSpring.dao.DocumentDAO;
 import cursoSpring.dao.PersonDAO;
 import cursoSpring.dao.PhoneDAO;
+import cursoSpring.entity.Address;
 import cursoSpring.entity.Document;
 import cursoSpring.entity.Person;
 import cursoSpring.entity.Phone;
+import cursoSpring.entity.Address.TypeAddress;
 import cursoSpring.entity.Phone.TypePhone;
 
 public class AppSpringJPA {
@@ -32,9 +36,65 @@ public class AppSpringJPA {
 //		updatePhone();
 //		updatePhoneByPerson();
 //		deleteOnCascade();
+		
+//		insertAddressByPerson();
+//		insertPersonByAddress();
+		findByCity();
 	}
 	
 	
+	private static void findByCity() {
+		List<Address> addresses = new AddressDAO().findByCity("Porto Alegre");
+		
+		for(Address address : addresses) {
+			System.out.println(address.toString());
+		}
+	}
+
+
+	private static void insertPersonByAddress() {
+		Person person = new PersonDAO().findById(19L);
+		
+		Address ad1 = new Address();
+		ad1.setCity("Porto Alegre");
+		ad1.setStreet("Av. Beira Rio, 102");
+		ad1.setType(TypeAddress.RESIDENCIAL);
+		ad1.setPersons(Arrays.asList(person));
+		
+		AddressDAO dao = new AddressDAO();
+		dao.save(ad1);
+		
+		System.out.println(dao.findById(ad1.getId()));
+	}
+
+
+	private static void insertAddressByPerson() {
+		Address ad1 = new Address();
+		Address ad2 = new Address();
+		
+		ad1.setCity("Porto Alegre");
+		ad1.setStreet("Av. Beira Rio, 102");
+		ad1.setType(TypeAddress.RESIDENCIAL);
+		
+		ad2.setCity("Porto Alegre");
+		ad2.setStreet("Av. Floresta, 36");
+		ad2.setType(TypeAddress.COMERCIAL);
+		
+		Person person = new Person();
+		person.setFirstName("Isabel");
+		person.setLastName("Martins");
+		person.setAge(20);
+		person.setDocument(new Document("322.456.789-11", 391148023));
+		person.addPhone(new Phone(TypePhone.RESIDENCIAL,"940124854"));
+		person.addPhone(new Phone(TypePhone.COMERCIAL,"940821554"));
+		person.setAddresses(Arrays.asList(ad1, ad2));
+		
+		new PersonDAO().save(person);
+		
+		System.out.println(new PersonDAO().findById(person.getId()));
+	}
+
+
 	private static void deleteOnCascade() {
 //		new PersonDAO().delete(15L);
 		
